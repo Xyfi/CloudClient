@@ -26,7 +26,9 @@ SOURCES += main.cpp\
     serverresponseparser.cpp \
     utils.cpp \
     synchronizer.cpp \
-    cloud9.cpp
+    cloud9.cpp \
+    about.cpp \
+    configuration.cpp
 
 HEADERS  += \
     clientrequestbuilder.hpp \
@@ -41,6 +43,10 @@ HEADERS  += \
     utils.hpp \
     mainwindow.hpp \
     synchronizer.hpp \
-    cloud9.hpp
+    cloud9.hpp \
+    about.hpp \
+    configuration.hpp
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+            configuration.ui \
+            about.ui
