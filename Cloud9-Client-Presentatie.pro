@@ -13,8 +13,32 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    client.cpp \
+    clientrequestbuilder.cpp \
+    connectionhandler.cpp \
+    filewatcherdatabase.cpp \
+    localfilewatcher.cpp \
+    messagequeue.cpp \
+    messagequeuehandler.cpp \
+    remotefilewatcher.cpp \
+    serverresponseparser.cpp \
+    synchronizer.cpp \
+    utils.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += \
+    client.hpp \
+    clientrequestbuilder.hpp \
+    connectionhandler.hpp \
+    filewatcherdatabase.hpp \
+    localfilewatcher.hpp \
+    messagequeue.hpp \
+    messagequeuehandler.hpp \
+    messagequeuehandlermessage.hpp \
+    remotefilewatcher.hpp \
+    serverresponseparser.hpp \
+    synchronizer.hpp \
+    utils.hpp \
+    mainwindow.hpp
 
 FORMS    += mainwindow.ui
