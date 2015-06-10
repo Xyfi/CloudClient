@@ -4,9 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui sql network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+CONFIG += C++11
 
 TARGET = Cloud9-Client-Presentatie
 TEMPLATE = app
@@ -14,7 +16,6 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    client.cpp \
     clientrequestbuilder.cpp \
     connectionhandler.cpp \
     filewatcherdatabase.cpp \
@@ -23,11 +24,11 @@ SOURCES += main.cpp\
     messagequeuehandler.cpp \
     remotefilewatcher.cpp \
     serverresponseparser.cpp \
+    utils.cpp \
     synchronizer.cpp \
-    utils.cpp
+    cloud9.cpp
 
 HEADERS  += \
-    client.hpp \
     clientrequestbuilder.hpp \
     connectionhandler.hpp \
     filewatcherdatabase.hpp \
@@ -37,8 +38,9 @@ HEADERS  += \
     messagequeuehandlermessage.hpp \
     remotefilewatcher.hpp \
     serverresponseparser.hpp \
-    synchronizer.hpp \
     utils.hpp \
-    mainwindow.hpp
+    mainwindow.hpp \
+    synchronizer.hpp \
+    cloud9.hpp
 
 FORMS    += mainwindow.ui
