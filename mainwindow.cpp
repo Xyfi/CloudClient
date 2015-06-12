@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     connect(ui->signInButton, SIGNAL(clicked()), this, SLOT(loginClicked()));
+
     ui->emailLineEdit->setText("a.botteram@gmail.com");
     ui->passwordLineEdit->setText("password1234");
 }
@@ -29,4 +30,11 @@ void MainWindow::loginClicked(){
         return;
     }
     emit loginRequest(email, password);
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    About dialog;
+    dialog.setModal(true);
+    dialog.exec();
 }

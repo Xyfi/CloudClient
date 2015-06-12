@@ -83,13 +83,15 @@
     <string/>
    </property>
    <property name="pixmap">
-    <pixmap>../../../../../Dropbox/MPNA - Private File Cloud/icon.png</pixmap>
+    <pixmap resource="resources.qrc">:/images/icon.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

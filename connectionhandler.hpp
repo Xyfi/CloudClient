@@ -2,9 +2,11 @@
 #define CLIENTFILEHANDLER_H
 
 #include <QObject>
-#include <QTcpSocket>
+#include <QSslSocket>
 #include <QFile>
 #include <QFileInfo>
+#include <Qlist>
+#include <QSslError>
 
 #include "clientrequestbuilder.hpp"
 #include "serverresponseparser.hpp"
@@ -19,10 +21,11 @@
 #define STATUS_FAILED 3
 #define STATUS_CONNECTION_FAILED 4
 
-class ConnectionHandler
+class ConnectionHandler : public QObject
 {
+    Q_OBJECT
 public:
-    explicit ConnectionHandler();
+    explicit ConnectionHandler(QObject* parent = 0);
     void setAuthenticationDetails(QString email, QString password, int machineId);
     void setServerAddress(QString ip, quint16 port);
 
@@ -42,19 +45,25 @@ private:
     quint16 port;
     bool serverAddressSet;
 
-    bool connectToHost(QTcpSocket* socket);
-    bool authenticate(QTcpSocket* socket);
+    QSslSocket* createSocket();
 
-    bool sendUploadRequest(QTcpSocket* socket, QString pathName);
-    bool uploadFile(QTcpSocket* socket, QString pathName);
+    bool connectToHost(QSslSocket* socket);
+    bool authenticate(QSslSocket* socket);
 
-    bool sendDownloadRequest(QTcpSocket* socket, QString pathName, FileDownloadResponse* response);
-    bool downloadFile(QTcpSocket* socket, QString pathNamem, FileDownloadResponse* response);
+    bool sendUploadRequest(QSslSocket* socket, QString pathName);
+    bool uploadFile(QSslSocket* socket, QString pathName);
 
-    bool sendDeletionRequest(QTcpSocket* socket, QString pathName);
+    bool sendDownloadRequest(QSslSocket* socket, QString pathName, FileDownloadResponse* response);
+    bool downloadFile(QSslSocket* socket, QString pathNamem, FileDownloadResponse* response);
 
-    bool sendFileChangesRequest(QTcpSocket* socket, int revisionNumber, ChangedFilesResponse* response);
-    bool readFileChanges(QTcpSocket* socket, ChangedFilesResponse* response, MessageQueue *queue);
+    bool sendDeletionRequest(QSslSocket* socket, QString pathName);
+
+    bool sendFileChangesRequest(QSslSocket* socket, int revisionNumber, ChangedFilesResponse* response);
+    bool readFileChanges(QSslSocket* socket, ChangedFilesResponse* response, MessageQueue *queue);
+
+private slots:
+    void handleErrors(const QList<QSslError> & errors);
+    void encryptedConnection();
 };
 
 #endif // CLIENTFILEHANDLER_H

@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "about.hpp"
+
 namespace Ui {
 class MainWindow;
 }
@@ -21,10 +23,13 @@ private:
 public slots:
     void loginClicked();
 
+
 signals:
     void loginRequest(QString email, QString password);
 
 
+private slots:
+    void on_actionAbout_triggered();
 };
 
 #endif // MAINWINDOW_H

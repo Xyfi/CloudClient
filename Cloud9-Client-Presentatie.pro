@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     synchronizer.cpp \
     cloud9.cpp \
     about.cpp \
-    configuration.cpp
+    configuration.cpp \
+    settings.cpp
 
 HEADERS  += \
     clientrequestbuilder.hpp \
@@ -45,8 +46,15 @@ HEADERS  += \
     synchronizer.hpp \
     cloud9.hpp \
     about.hpp \
-    configuration.hpp
+    configuration.hpp \
+    settings.hpp
 
 FORMS    += mainwindow.ui \
             configuration.ui \
             about.ui
+
+DISTFILES += \
+    images/icon.png
+
+RESOURCES += \
+    resources.qrc

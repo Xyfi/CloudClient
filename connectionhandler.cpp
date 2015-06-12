@@ -1,6 +1,6 @@
 #include "connectionhandler.hpp"
 
-ConnectionHandler::ConnectionHandler()
+ConnectionHandler::ConnectionHandler(QObject* parent) : QObject(parent)
 {
     authDetailsSet = false;
     serverAddressSet = false;
@@ -36,7 +36,7 @@ bool ConnectionHandler::sendFile(QString pathName)
         qDebug() << "Authentication details not set. Please call setAuthenticationDetails().";
         return false;
     }
-    QTcpSocket* socket = new QTcpSocket();
+    QSslSocket* socket = createSocket();
     if(!connectToHost(socket)){
         delete socket;
         return false;
@@ -55,6 +55,7 @@ bool ConnectionHandler::sendFile(QString pathName)
         return false;
     }
     qDebug() << "[ClientFileHandler::sendFile] File upload succesfull";
+    socket->close();
     delete socket;
     return true;
 }
@@ -68,7 +69,7 @@ bool ConnectionHandler::retrieveFile(QString pathName){
         qDebug() << "Authentication details not set. Please call setAuthenticationDetails().";
         return false;
     }
-    QTcpSocket* socket = new QTcpSocket();
+    QSslSocket* socket = createSocket();
     if(!connectToHost(socket)){
         delete socket;
         return false;
@@ -87,6 +88,7 @@ bool ConnectionHandler::retrieveFile(QString pathName){
         return false;
     }
     qDebug() << "[ClientFileHandler::retrieveFile] File download succesfull";
+    socket->close();
     delete socket;
     return true;
 }
@@ -100,7 +102,7 @@ bool ConnectionHandler::removeFile(QString pathName){
         qDebug() << "Authentication details not set. Please call setAuthenticationDetails().";
         return false;
     }
-    QTcpSocket* socket = new QTcpSocket();
+    QSslSocket* socket = createSocket();
     if(!connectToHost(socket)){
         delete socket;
         return false;
@@ -114,6 +116,7 @@ bool ConnectionHandler::removeFile(QString pathName){
         return false;
     }
     qDebug() << "[ClientFileHandler::removeFile] File deletion succesfull";
+    socket->close();
     delete socket;
     return true;
 }
@@ -127,7 +130,7 @@ bool ConnectionHandler::retrieveRemoteFileChanges(int localRevisionNumber, Messa
         qDebug() << "Authentication details not set. Please call setAuthenticationDetails().";
         return false;
     }
-    QTcpSocket* socket = new QTcpSocket();
+    QSslSocket* socket = createSocket();
     if(!connectToHost(socket)){
         delete socket;
         return false;
@@ -146,6 +149,7 @@ bool ConnectionHandler::retrieveRemoteFileChanges(int localRevisionNumber, Messa
         return false;
     }
     qDebug() << "[ClientFileHandler::retrieveRemoteFileChanges] Retrieving file changes succesfull";
+    socket->close();
     delete socket;
     return true;
 }
@@ -183,12 +187,24 @@ bool ConnectionHandler::handle(Message message){
 
 // PRIVATE
 
-bool ConnectionHandler::connectToHost(QTcpSocket* socket){
-    socket->connectToHost(ip, port);
-    return socket->waitForConnected(DEFAULT_TIMEOUT);
+QSslSocket* ConnectionHandler::createSocket(){
+    QSslSocket* socket = new QSslSocket;
+    QList<QSslCertificate> cert = QSslCertificate::fromPath(QLatin1String("cert/server.crt"));
+    QSslError error(QSslError::SelfSignedCertificate, cert.at(0));
+    QList<QSslError> expectedSslErrors;
+    expectedSslErrors.append(error);
+    socket->ignoreSslErrors(expectedSslErrors);
+    connect(socket, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(handleErrors(QList<QSslError>)), Qt::DirectConnection);
+    connect(socket, SIGNAL(encrypted()),this, SLOT(encryptedConnection()), Qt::DirectConnection);
+    return socket;
 }
 
-bool ConnectionHandler::authenticate(QTcpSocket *socket){
+bool ConnectionHandler::connectToHost(QSslSocket* socket){
+    socket->connectToHostEncrypted(ip, port);
+    return socket->waitForEncrypted(DEFAULT_TIMEOUT);
+}
+
+bool ConnectionHandler::authenticate(QSslSocket *socket){
     socket->write(ClientRequestBuilder::buildAuthenticationRequest(username,password,machineId));
     if(!socket->waitForBytesWritten(DEFAULT_TIMEOUT)){
         qDebug() << "[Authentication] Timeout while waiting for bytes to be written to socket. Connection closed.";
@@ -209,7 +225,7 @@ bool ConnectionHandler::authenticate(QTcpSocket *socket){
     return true;
 }
 
-bool ConnectionHandler::sendUploadRequest(QTcpSocket *socket, QString pathName){
+bool ConnectionHandler::sendUploadRequest(QSslSocket *socket, QString pathName){
 
     QFile file(pathName);
     QFileInfo info(file);
@@ -241,7 +257,7 @@ bool ConnectionHandler::sendUploadRequest(QTcpSocket *socket, QString pathName){
     return true;
 }
 
-bool ConnectionHandler::uploadFile(QTcpSocket *socket, QString pathName){
+bool ConnectionHandler::uploadFile(QSslSocket *socket, QString pathName){
     QFile file(pathName);
     if(!file.open(QIODevice::ReadOnly)){
         return false;
@@ -274,7 +290,7 @@ bool ConnectionHandler::uploadFile(QTcpSocket *socket, QString pathName){
     return true;
 }
 
-bool ConnectionHandler::sendDownloadRequest(QTcpSocket *socket, QString pathName, FileDownloadResponse* response){
+bool ConnectionHandler::sendDownloadRequest(QSslSocket *socket, QString pathName, FileDownloadResponse* response){
 
     QFile file(pathName);
     QFileInfo info(file);
@@ -301,7 +317,7 @@ bool ConnectionHandler::sendDownloadRequest(QTcpSocket *socket, QString pathName
     return true;
 }
 
-bool ConnectionHandler::downloadFile(QTcpSocket *socket, QString pathName, FileDownloadResponse* response){
+bool ConnectionHandler::downloadFile(QSslSocket *socket, QString pathName, FileDownloadResponse* response){
     QFile file(pathName);
     file.open(QIODevice::WriteOnly | QIODevice::Truncate);
     quint64 receivedTotal = 0;
@@ -324,7 +340,7 @@ bool ConnectionHandler::downloadFile(QTcpSocket *socket, QString pathName, FileD
     return true;
 }
 
-bool ConnectionHandler::sendDeletionRequest(QTcpSocket *socket, QString pathName){
+bool ConnectionHandler::sendDeletionRequest(QSslSocket *socket, QString pathName){
     QFile file(pathName);
     QFileInfo info(file);
 
@@ -350,7 +366,7 @@ bool ConnectionHandler::sendDeletionRequest(QTcpSocket *socket, QString pathName
     return true;
 }
 
-bool ConnectionHandler::sendFileChangesRequest(QTcpSocket *socket, int revisionNumber, ChangedFilesResponse* response){
+bool ConnectionHandler::sendFileChangesRequest(QSslSocket *socket, int revisionNumber, ChangedFilesResponse* response){
 
     socket->write(ClientRequestBuilder::buildFileChangesRequest(revisionNumber, machineId));
 
@@ -373,7 +389,7 @@ bool ConnectionHandler::sendFileChangesRequest(QTcpSocket *socket, int revisionN
     return true;
 }
 
-bool ConnectionHandler::readFileChanges(QTcpSocket *socket, ChangedFilesResponse* response, MessageQueue *queue){
+bool ConnectionHandler::readFileChanges(QSslSocket *socket, ChangedFilesResponse* response, MessageQueue *queue){
     socket->waitForReadyRead(DEFAULT_TIMEOUT);
     QByteArray data = socket->readAll();
     QDataStream out(data);
@@ -394,4 +410,14 @@ bool ConnectionHandler::readFileChanges(QTcpSocket *socket, ChangedFilesResponse
     return true;
 }
 
+// SLOTS
 
+void ConnectionHandler::handleErrors(const QList<QSslError> & errors){
+    for(QSslError error : errors){
+        qDebug() << error.errorString();
+    }
+}
+
+void ConnectionHandler::encryptedConnection(){
+    qDebug() << "SUCCCEESSSSSS";
+}

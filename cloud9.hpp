@@ -7,6 +7,9 @@
 
 #include "mainwindow.hpp"
 #include "synchronizer.hpp"
+#include "configuration.hpp"
+#include "about.hpp"
+#include "settings.hpp"
 
 class Cloud9 : public QObject
 {
@@ -16,6 +19,8 @@ public:
     ~Cloud9();
 private:
     MainWindow mainWindow;
+    Configuration configurationWindow;
+    About aboutWindow;
     Synchronizer synchronizer;
     QThread synchronizerThread;
 signals:

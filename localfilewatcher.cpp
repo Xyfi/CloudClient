@@ -63,7 +63,7 @@ void LocalFileWatcher::checkDirectoryForChangedFiles(QString dir){
     }
     for(QString string : storedFileList){
         QFileInfo file = QFileInfo(string);
-        queue->addMessage({MESSAGE_TYPE_UPLOAD, file.path(), file.fileName()});
+        queue->addMessage({MESSAGE_TYPE_DELETE, file.path(), file.fileName()});
         //emit fileRemoved(string);
     }
 }
