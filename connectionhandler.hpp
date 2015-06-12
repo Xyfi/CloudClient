@@ -32,6 +32,7 @@ public:
     bool sendFile(QString);
     bool retrieveFile(QString);
     bool removeFile(QString);
+    bool authenticateOnly();
     bool retrieveRemoteFileChanges(int localRevisionNumber, MessageQueue *queue);
     bool handle(Message message);
 

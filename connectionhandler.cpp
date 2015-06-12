@@ -154,6 +154,27 @@ bool ConnectionHandler::retrieveRemoteFileChanges(int localRevisionNumber, Messa
     return true;
 }
 
+bool ConnectionHandler::authenticateOnly(){
+    if(!serverAddressSet){
+        qDebug() << "Server address not set. Please call setServerAddress().";
+        return false;
+    }
+    if(!authDetailsSet){
+        qDebug() << "Authentication details not set. Please call setAuthenticationDetails().";
+        return false;
+    }
+    QSslSocket* socket = createSocket();
+    if(!connectToHost(socket)){
+        delete socket;
+        return false;
+    }
+    if(!authenticate(socket)){
+        delete socket;
+        return false;
+    }
+    return true;
+}
+
 bool ConnectionHandler::handle(Message message){
     QString filepath = message.directory + "/" + message.filename;
     switch(message.type){
