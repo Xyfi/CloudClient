@@ -172,6 +172,7 @@ bool ConnectionHandler::authenticateOnly(){
         delete socket;
         return false;
     }
+    delete socket;
     return true;
 }
 
