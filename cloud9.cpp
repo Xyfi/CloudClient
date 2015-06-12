@@ -7,6 +7,7 @@ Cloud9::Cloud9(QObject *parent) : QObject(parent)
     connect(&mainWindow, SIGNAL(loginRequest(QString,QString)), this, SLOT(setAuthenticationDetails(QString, QString)));
     connect(this, SIGNAL(startSync()), &synchronizer, SLOT(startSync()));
     mainWindow.show();
+
     if(!QDir("watched").exists()){
         QDir().mkdir("watched");
     }

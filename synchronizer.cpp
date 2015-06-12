@@ -23,3 +23,8 @@ void Synchronizer::setAuthenticationDetails(QString email, QString password, int
 void Synchronizer::startSync(){
     run();
 }
+
+
+void Synchronizer::authenticate(){
+    emit authenticationSuccess(connection.authenticateOnly());
+}

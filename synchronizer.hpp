@@ -28,6 +28,10 @@ private:
 
 public slots:
     void startSync();
+    void authenticate();
+
+signals:
+    void authenticationSuccess(bool success);
 };
 
 #endif // CLIENT_H
