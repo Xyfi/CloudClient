@@ -29,6 +29,10 @@ void Synchronizer::setAuthenticationDetails(QString email, QString password, int
 }
 
 void Synchronizer::startSync(){
+    QString sSyncFolderPath;
+    // TODO: if statement of te checken of de query resultaat geeft
+    Settings::getSetting(Settings::SET_SYNC_FOLDER, &sSyncFolderPath);
+    this->setSyncFolder(sSyncFolderPath);
     run();
 }
 

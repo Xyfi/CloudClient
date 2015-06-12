@@ -8,6 +8,7 @@
 #include "connectionhandler.hpp"
 #include "messagequeue.hpp"
 #include "remotefilewatcher.hpp"
+#include "settings.hpp"
 
 class Synchronizer : public QObject
 {

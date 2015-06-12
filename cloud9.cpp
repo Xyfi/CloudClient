@@ -8,6 +8,7 @@ Cloud9::Cloud9(QObject *parent) : QObject(parent)
     connect(this, SIGNAL(startAuthentication()), &synchronizer, SLOT(authenticate()));
     connect(&synchronizer, SIGNAL(authenticationSuccess(bool)), this, SLOT(authenticationSuccess(bool)));
     connect(this, SIGNAL(startSync()), &synchronizer, SLOT(startSync()));
+    connect(&configurationWindow, SIGNAL(startSync()), &synchronizer, SLOT(startSync()));
     mainWindow.show();
 
     if(!QDir("watched").exists()){
@@ -58,13 +59,10 @@ void Cloud9::authenticationSuccess(bool status) {
             //      configurationWindow closes. emit should be executed
             //      in the "else". and the ok of configurationWindow
             //      should emit the same signal.
+            //      FIXED !!?
+        } else {
+            emit startSync();
         }
-        QString sSyncFolderPath;
-        // FIXME: if statement of te checken of de query resultaat geeft
-        Settings::getSetting(Settings::SET_SYNC_FOLDER, &sSyncFolderPath);
-        synchronizer.setSyncFolder(sSyncFolderPath);
-
-        emit startSync();
     } else {
         //show feedback login failed
     }

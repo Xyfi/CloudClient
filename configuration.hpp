@@ -18,6 +18,9 @@ public:
     explicit Configuration(QWidget *parent = 0);
     ~Configuration();
 
+signals:
+    void startSync();
+
 private slots:
     void on_closeButton_clicked();
 
