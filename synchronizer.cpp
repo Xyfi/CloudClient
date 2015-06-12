@@ -1,4 +1,5 @@
 #include "synchronizer.hpp"
+#include <QDebug>
 
 Synchronizer::Synchronizer(QObject* parent) : QObject(parent),
     localWatcher("watched", &queue),
