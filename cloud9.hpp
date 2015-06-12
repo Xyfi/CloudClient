@@ -5,6 +5,8 @@
 #include <QDir>
 #include <QThread>
 
+#include <time.h>
+
 #include "mainwindow.hpp"
 #include "synchronizer.hpp"
 #include "configuration.hpp"
