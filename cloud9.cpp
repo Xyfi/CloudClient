@@ -49,6 +49,21 @@ void Cloud9::setAuthenticationDetails(QString email, QString password){
 void Cloud9::authenticationSuccess(bool status) {
     if(status) {
         mainWindow.close();
+
+        QString sFirstRun;
+        Settings::getSetting(Settings::SET_FIRST_RUN, &sFirstRun);
+        if (sFirstRun.toInt() == 1) {
+            configurationWindow.show();
+            // BUG: code after show get's executed before
+            //      configurationWindow closes. emit should be executed
+            //      in the "else". and the ok of configurationWindow
+            //      should emit the same signal.
+        }
+        QString sSyncFolderPath;
+        // FIXME: if statement of te checken of de query resultaat geeft
+        Settings::getSetting(Settings::SET_SYNC_FOLDER, &sSyncFolderPath);
+        synchronizer.setSyncFolder(sSyncFolderPath);
+
         emit startSync();
     } else {
         //show feedback login failed

@@ -22,6 +22,10 @@ void Configuration::on_closeButton_clicked()
 void Configuration::on_okButton_clicked()
 {
     qDebug() << ui->pathEdit->text();
+    // FIXME: check for legit path in ui->pathEdit
+    Settings::setSetting(Settings::SET_SYNC_FOLDER, ui->pathEdit->text());
+    Settings::setSetting(Settings::SET_FIRST_RUN, "0");
+    this->close();
 }
 
 void Configuration::on_browseButton_clicked()

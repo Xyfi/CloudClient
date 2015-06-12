@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include "about.hpp"
+#include "settings.hpp"
 
 namespace Ui {
 class Configuration;
