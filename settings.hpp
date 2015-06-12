@@ -23,10 +23,11 @@ public:
     static bool setSetting(QString key, QString value);
     static bool getSetting(QString key, QString *value);
 
-    const QString SET_FIRST_RUN;
-    const QString SET_SYNC_FOLDER;
-    const QString SET_USERNAME;
-    const QString SET_PASSWORD;
+    static const QString SET_FIRST_RUN;
+    static const QString SET_SYNC_FOLDER;
+    static const QString SET_USERNAME;
+    static const QString SET_PASSWORD;
+    static const QString SET_MACHINE_ID;
 
 private:
     static QSqlDatabase database;

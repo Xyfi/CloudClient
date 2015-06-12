@@ -1,13 +1,14 @@
 #include "settings.hpp"
 
+const QString Settings::SET_FIRST_RUN( "FirstRun" );
+const QString Settings::SET_SYNC_FOLDER( "SyncFolder" );
+const QString Settings::SET_USERNAME( "Username" );
+const QString Settings::SET_PASSWORD( "Password" );
+const QString Settings::SET_MACHINE_ID( "MachineId" );
+
 QSqlDatabase Settings::database;
 
-Settings::Settings(QObject *parent) : QObject(parent),
-    SET_FIRST_RUN( "FirstRun" ),
-    SET_SYNC_FOLDER( "SyncFolder" ),
-    SET_USERNAME( "Username" ),
-    SET_PASSWORD( "Password" )
-{
+Settings::Settings(QObject *parent) : QObject(parent) {
     QSqlDatabase::addDatabase(DB_TYPE, "Settings");
     database = QSqlDatabase::database("Settings");
     database.setDatabaseName(DB_NAME);
