@@ -2,7 +2,11 @@
 
 QSqlDatabase Settings::database;
 
-Settings::Settings(QObject *parent) : QObject(parent)
+Settings::Settings(QObject *parent) : QObject(parent),
+    SET_FIRST_RUN( "FirstRun" ),
+    SET_SYNC_FOLDER( "SyncFolder" ),
+    SET_USERNAME( "Username" ),
+    SET_PASSWORD( "Password" )
 {
     QSqlDatabase::addDatabase(DB_TYPE, "Settings");
     database = QSqlDatabase::database("Settings");
@@ -17,6 +21,7 @@ Settings::Settings(QObject *parent) : QObject(parent)
         if(!s){
             qDebug() << "Query failed";
         }
+        setSetting(SET_FIRST_RUN, "1");
         qDebug() << "Table Settings added";
     }
     if(!database.open()){
