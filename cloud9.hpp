@@ -27,11 +27,11 @@ private:
     QThread synchronizerThread;
 signals:
     void startSync();
-    void startAuthentication();
+    void startAuthentication(QString email, QString password, bool rememberMe);
 
 public slots:
-    void setAuthenticationDetails(QString email, QString password);
-    void authenticationSuccess(bool status);
+    void setAuthenticationDetails(QString email, QString password, bool rememberMe);
+    void authenticationSuccess(bool status, QString email, QString password, bool rememberMe);
 };
 
 #endif // CLOUD9_H

@@ -9,7 +9,7 @@ Synchronizer::Synchronizer(QObject* parent) : QObject(parent),
     connection.setServerAddress("192.168.1.50", 1337);
 }
 
-void Synchronizer::run(){
+void Synchronizer::run() {
     localWatcher.checkForChanges();
     remoteWatcher.checkForChanges(0);
     // TODO Handle merge conflicts
@@ -17,15 +17,15 @@ void Synchronizer::run(){
     localWatcher.refreshDatabase();
 }
 
-void Synchronizer::setAuthenticationDetails(QString email, QString password, int machineId){
+void Synchronizer::setAuthenticationDetails(QString email, QString password, int machineId) {
     connection.setAuthenticationDetails(email, password, machineId);
 }
 
-void Synchronizer::startSync(){
+void Synchronizer::startSync() {
     run();
 }
 
 
-void Synchronizer::authenticate(){
-    emit authenticationSuccess(connection.authenticateOnly());
+void Synchronizer::authenticate(QString email, QString password, bool rememberMe) {
+    emit authenticationSuccess(connection.authenticateOnly(), email, password, rememberMe);
 }

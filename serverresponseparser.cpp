@@ -10,12 +10,12 @@ ServerResponseParser::~ServerResponseParser()
 
 }
 
-BasicOkResponse ServerResponseParser::parseBasicOkResponse(QByteArray response){
+BasicOkResponse ServerResponseParser::parseBasicOkResponse(QByteArray response) {
     BasicOkResponse result;
     QDataStream out(response);
     quint8 respid;
     out >> respid;
-    if(respid != SERVER_RESPONSE_ID_OK){
+    if(respid != SERVER_RESPONSE_ID_OK) {
         result.parseSuccess = false;
     } else {
         result.parseSuccess = true;
@@ -24,25 +24,25 @@ BasicOkResponse ServerResponseParser::parseBasicOkResponse(QByteArray response){
     }
     return result;
 }
-AuthenticationResponse ServerResponseParser::parseAuthenticationResponse(QByteArray response){
+AuthenticationResponse ServerResponseParser::parseAuthenticationResponse(QByteArray response) {
     return parseBasicOkResponse(response);
 }
-UploadRequestResponse ServerResponseParser::parseUploadRequestResponse(QByteArray response){
+UploadRequestResponse ServerResponseParser::parseUploadRequestResponse(QByteArray response) {
     return parseBasicOkResponse(response);
 }
-UploadResponse ServerResponseParser::parseUploadResponse(QByteArray response){
+UploadResponse ServerResponseParser::parseUploadResponse(QByteArray response) {
     return parseBasicOkResponse(response);
 }
-FileDeletionResponse ServerResponseParser::parseFileDeletionResponse(QByteArray response){
+FileDeletionResponse ServerResponseParser::parseFileDeletionResponse(QByteArray response) {
     return parseBasicOkResponse(response);
 }
 
-FileDownloadResponse ServerResponseParser::parseFileDownloadResponse(QByteArray response){
+FileDownloadResponse ServerResponseParser::parseFileDownloadResponse(QByteArray response) {
     FileDownloadResponse result;
     QDataStream out(response);
     quint8 respid;
     out >> respid;
-    if(respid != SERVER_RESPONSE_ID_DOWNLOAD){
+    if(respid != SERVER_RESPONSE_ID_DOWNLOAD) {
         result.parseSuccess = false;
     } else {
         result.parseSuccess = true;
@@ -52,12 +52,12 @@ FileDownloadResponse ServerResponseParser::parseFileDownloadResponse(QByteArray 
     return result;
 }
 
-ChangedFilesResponse ServerResponseParser::parseChangedFilesResponse(QByteArray response){
+ChangedFilesResponse ServerResponseParser::parseChangedFilesResponse(QByteArray response) {
     ChangedFilesResponse result;
     QDataStream out(response);
     quint8 respid;
     out >> respid;
-    if(respid != SERVER_RESPONSE_ID_CHANGED_FILES){
+    if(respid != SERVER_RESPONSE_ID_CHANGED_FILES) {
         result.parseSuccess = false;
     } else {
         result.parseSuccess = true;

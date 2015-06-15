@@ -5,7 +5,7 @@ LocalFileWatcher::LocalFileWatcher(QString sync_folder_path, MessageQueue *queue
 {
     database = new FileWatcherDatabase;
     sync_folder = QDir(sync_folder_path);
-    if(!sync_folder.exists()){
+    if(!sync_folder.exists()) {
         qDebug() << "Error! Folder passed into FileWatcher not valid!";
         throw QException();
     }
@@ -17,7 +17,7 @@ LocalFileWatcher::~LocalFileWatcher()
     delete database;
 }
 
-bool LocalFileWatcher::checkForChanges(){
+bool LocalFileWatcher::checkForChanges() {
     QDirIterator existingFolderIterator(sync_folder.dirName(),
                                         QDir::AllDirs | QDir::NoDotAndDotDot,
                                         QDirIterator::Subdirectories);
@@ -25,7 +25,7 @@ bool LocalFileWatcher::checkForChanges(){
     checkDirectoryForChangedFiles(sync_folder.dirName());
     while ( existingFolderIterator.hasNext() ) {
         QString dir = existingFolderIterator.next();
-        if(storedirectoryList.contains(dir)){
+        if(storedirectoryList.contains(dir)) {
             storedirectoryList.removeOne(dir);
         } else {
             //emit directoryAdded(dir);
@@ -33,22 +33,22 @@ bool LocalFileWatcher::checkForChanges(){
         checkDirectoryForChangedFiles(dir);
     }
     storedirectoryList.removeOne(sync_folder.path());
-    for(QString string : storedirectoryList){
+    for(QString string : storedirectoryList) {
         //emit directoryRemoved(string);
     }
     refreshDatabase();
     return true;
 }
 
-void LocalFileWatcher::checkDirectoryForChangedFiles(QString dir){
+void LocalFileWatcher::checkDirectoryForChangedFiles(QString dir) {
     QDirIterator existingFileIterator(dir, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::NoIteratorFlags);
     QStringList storedFileList = database->getFilesInDirectory(dir);
-    while(existingFileIterator.hasNext()){
+    while(existingFileIterator.hasNext()) {
         QFileInfo file = QFileInfo(existingFileIterator.next());
-        if(storedFileList.contains(file.filePath())){
+        if(storedFileList.contains(file.filePath())) {
             QString db_hash = database->getFileHash(file.filePath());
             QString local_hash = Utils::generateHash(file.filePath());
-            if(QString::compare(db_hash, local_hash) == 0){
+            if(QString::compare(db_hash, local_hash) == 0) {
             } else {
                 qDebug() << db_hash << local_hash;
                 queue->addMessage({MESSAGE_TYPE_UPLOAD, file.path(), file.fileName()});
@@ -61,14 +61,14 @@ void LocalFileWatcher::checkDirectoryForChangedFiles(QString dir){
             //emit fileAdded(file.filePath());
         }
     }
-    for(QString string : storedFileList){
+    for(QString string : storedFileList) {
         QFileInfo file = QFileInfo(string);
         queue->addMessage({MESSAGE_TYPE_DELETE, file.path(), file.fileName()});
         //emit fileRemoved(string);
     }
 }
 
-bool LocalFileWatcher::refreshDatabase(){
+bool LocalFileWatcher::refreshDatabase() {
     database->deleteAllFilesAndDirectories();
     database->addAllFilesAndDirectories(sync_folder.dirName());
     return true;

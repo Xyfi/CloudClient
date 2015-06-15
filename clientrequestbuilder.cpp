@@ -1,16 +1,14 @@
 #include "clientrequestbuilder.hpp"
 
-ClientRequestBuilder::ClientRequestBuilder()
-{
+ClientRequestBuilder::ClientRequestBuilder() {
 
 }
 
-ClientRequestBuilder::~ClientRequestBuilder()
-{
+ClientRequestBuilder::~ClientRequestBuilder() {
 
 }
 
-QByteArray ClientRequestBuilder::buildAuthenticationRequest(QString username, QString password, int machineId){
+QByteArray ClientRequestBuilder::buildAuthenticationRequest(QString username, QString password, int machineId) {
     QByteArray response;
     QDataStream in(&response, QIODevice::WriteOnly);
     in << (quint8)REQID_AUTHENTICATION;
@@ -20,7 +18,7 @@ QByteArray ClientRequestBuilder::buildAuthenticationRequest(QString username, QS
     return response;
 }
 
-QByteArray ClientRequestBuilder::buildFileUploadRequest(quint64 filesize, QString directory, QString filename){
+QByteArray ClientRequestBuilder::buildFileUploadRequest(quint64 filesize, QString directory, QString filename) {
     QByteArray response;
     QDataStream in(&response, QIODevice::WriteOnly);
     in << (quint8) REQID_FILE_UPLOAD;
@@ -30,7 +28,7 @@ QByteArray ClientRequestBuilder::buildFileUploadRequest(quint64 filesize, QStrin
     return response;
 }
 
-QByteArray ClientRequestBuilder::buildFileDownloadRequest(QString directory, QString filename){
+QByteArray ClientRequestBuilder::buildFileDownloadRequest(QString directory, QString filename) {
     QByteArray response;
     QDataStream in(&response, QIODevice::WriteOnly);
     in << (quint8) REQID_FILE_DOWNLOAD;
@@ -39,7 +37,7 @@ QByteArray ClientRequestBuilder::buildFileDownloadRequest(QString directory, QSt
     return response;
 }
 
-QByteArray ClientRequestBuilder::buildFileDeletionRequest(QString directory, QString filename){
+QByteArray ClientRequestBuilder::buildFileDeletionRequest(QString directory, QString filename) {
     QByteArray response;
     QDataStream in(&response, QIODevice::WriteOnly);
     in << (quint8) REQID_FILE_DELETION;
@@ -48,7 +46,7 @@ QByteArray ClientRequestBuilder::buildFileDeletionRequest(QString directory, QSt
     return response;
 }
 
-QByteArray ClientRequestBuilder::buildFileChangesRequest(quint64 revisionNumber, int machineId){
+QByteArray ClientRequestBuilder::buildFileChangesRequest(quint64 revisionNumber, int machineId) {
     QByteArray response;
     QDataStream in(&response, QIODevice::WriteOnly);
     in << (quint8) REQID_FILE_CHANGES;
@@ -57,7 +55,7 @@ QByteArray ClientRequestBuilder::buildFileChangesRequest(quint64 revisionNumber,
     return response;
 }
 
-QByteArray ClientRequestBuilder::buildSuccessResponse(bool success){
+QByteArray ClientRequestBuilder::buildSuccessResponse(bool success) {
     QByteArray response;
     QDataStream in(&response, QIODevice::WriteOnly);
     in << (quint8) RESPID_SUCCESS;

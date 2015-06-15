@@ -25,7 +25,7 @@ public slots:
 
 
 signals:
-    void loginRequest(QString email, QString password);
+    void loginRequest(QString email, QString password, bool rememberMe);
 
 
 private slots:

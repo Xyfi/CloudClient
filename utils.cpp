@@ -10,11 +10,11 @@ Utils::~Utils()
 
 }
 
-QString Utils::generateHash(QString pathname){
+QString Utils::generateHash(QString pathname) {
     QCryptographicHash crypto(QCryptographicHash::Md5);
     QFile file(pathname);
     file.open(QFile::ReadOnly);
-    while(!file.atEnd()){
+    while(!file.atEnd()) {
       crypto.addData(file.read(8192));
     }
     return crypto.result();

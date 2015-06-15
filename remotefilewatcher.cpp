@@ -6,7 +6,7 @@ RemoteFileWatcher::RemoteFileWatcher(MessageQueue *queue, ConnectionHandler *con
 
 }
 
-void RemoteFileWatcher::checkForChanges(int localRevisionNumber){
+void RemoteFileWatcher::checkForChanges(int localRevisionNumber) {
     connection->retrieveRemoteFileChanges(localRevisionNumber, queue);
 }
 

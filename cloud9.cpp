@@ -1,35 +1,38 @@
 #include "cloud9.hpp"
 
-Cloud9::Cloud9(QObject *parent) : QObject(parent)
-{
+#include <QDebug>
+
+Cloud9::Cloud9(QObject *parent) : QObject(parent) {
     //Init settings
     static Settings settings;
-    connect(&mainWindow, SIGNAL(loginRequest(QString,QString)), this, SLOT(setAuthenticationDetails(QString, QString)));
-    connect(this, SIGNAL(startAuthentication()), &synchronizer, SLOT(authenticate()));
-    connect(&synchronizer, SIGNAL(authenticationSuccess(bool)), this, SLOT(authenticationSuccess(bool)));
+    connect(&mainWindow, SIGNAL(loginRequest(QString,QString, bool)), this, SLOT(setAuthenticationDetails(QString, QString, bool)));
+    connect(this, SIGNAL(startAuthentication(QString, QString, bool)), &synchronizer, SLOT(authenticate(QString, QString, bool)));
+    connect(&synchronizer, SIGNAL(authenticationSuccess(bool, QString, QString, bool)), this, SLOT(authenticationSuccess(bool, QString, QString, bool)));
     connect(this, SIGNAL(startSync()), &synchronizer, SLOT(startSync()));
-    mainWindow.show();
 
-    if(!QDir("watched").exists()){
-        QDir().mkdir("watched");
+    //Check remember login
+    QString username, password;
+    if(Settings::getSetting(Settings::SET_USERNAME, &username) && Settings::getSetting(Settings::SET_PASSWORD, &password)) {
+        mainWindow.close();
+        emit startSync();
+        qDebug() << "remembered";
+    } else {
+        mainWindow.show();
     }
 
-    Settings::setSetting("TestSetting", "TRUE");
-    QString testSetting;
-    Settings::getSetting("TestSetting", &testSetting);
-    qDebug() << testSetting;
+    if(!QDir("watched").exists()) {
+        QDir().mkdir("watched");
+    }
 
     synchronizer.moveToThread(&synchronizerThread);
     synchronizerThread.start();
 }
 
-Cloud9::~Cloud9()
-{
+Cloud9::~Cloud9() {
 
 }
 
-void Cloud9::setAuthenticationDetails(QString email, QString password){
-
+void Cloud9::setAuthenticationDetails(QString email, QString password, bool rememberMe) {
     int iMachineId;
     QString sMachineId;
     if (Settings::getSetting(Settings::SET_MACHINE_ID, &sMachineId)) {
@@ -43,11 +46,18 @@ void Cloud9::setAuthenticationDetails(QString email, QString password){
     }
 
     synchronizer.setAuthenticationDetails(email, password, iMachineId);
-    emit startAuthentication();
+    emit startAuthentication(email, password, rememberMe);
 }
 
-void Cloud9::authenticationSuccess(bool status) {
+void Cloud9::authenticationSuccess(bool status, QString email, QString password, bool rememberMe) {
     if(status) {
+        if(rememberMe) {
+            Settings::setSetting(Settings::SET_USERNAME, email);
+            Settings::setSetting(Settings::SET_PASSWORD, password);
+        } else {
+            Settings::setSetting(Settings::SET_USERNAME, "");
+            Settings::setSetting(Settings::SET_PASSWORD, "");
+        }
         mainWindow.close();
         emit startSync();
     } else {

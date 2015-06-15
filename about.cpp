@@ -3,17 +3,14 @@
 
 About::About(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::About)
-{
+    ui(new Ui::About) {
     ui->setupUi(this);
 }
 
-About::~About()
-{
+About::~About() {
     delete ui;
 }
 
-void About::on_closeButton_clicked()
-{
+void About::on_closeButton_clicked() {
     this->close();
 }

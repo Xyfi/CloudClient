@@ -1,6 +1,8 @@
 #include "mainwindow.hpp"
 #include "ui_mainwindow.h"
 
+#include <QDebug>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -17,19 +19,25 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::loginClicked(){
+void MainWindow::loginClicked() {
     QString email = ui->emailLineEdit->text();
     QString password = ui->passwordLineEdit->text();
+
+    bool rememberMe = false;
+    if(ui->rememberCheckBox->isChecked()) {
+        rememberMe = true;
+    }
+
     QString strPatt = "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}\\b";
     QRegExp regex(strPatt);
-    if(!regex.exactMatch(email)){
+    if(!regex.exactMatch(email)) {
         ui->emailLineEdit->setStyleSheet("QLineEdit { border : 2px solid red}");
         return;
     } else if (password.length() < 4) {
         ui->passwordLineEdit->setStyleSheet("QLineEdit { border : 2px solid yellow}");
         return;
     }
-    emit loginRequest(email, password);
+    emit loginRequest(email, password, rememberMe);
 }
 
 void MainWindow::on_actionAbout_triggered()

@@ -28,10 +28,10 @@ private:
 
 public slots:
     void startSync();
-    void authenticate();
+    void authenticate(QString email, QString password, bool rememberMe);
 
 signals:
-    void authenticationSuccess(bool success);
+    void authenticationSuccess(bool success, QString email, QString password, bool rememberMe);
 };
 
 #endif // CLIENT_H
