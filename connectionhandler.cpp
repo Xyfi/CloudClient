@@ -366,7 +366,17 @@ bool ConnectionHandler::sendDownloadRequest(QSslSocket *socket, QString pathName
 
 bool ConnectionHandler::downloadFile(QSslSocket *socket, QString pathName, FileDownloadResponse* response){
     QFile file(pathName);
-    file.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QFileInfo info(file);
+    if(!QDir().mkpath(info.path())){
+        qDebug() << "[ClientFileHandler::downloadFile] Error creating directory. Connection closed.";
+        socket->close();
+        return false;
+    }
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate)){
+        qDebug() << "[ClientFileHandler::downloadFile] Error opening file. Connection closed.";
+        socket->close();
+        return false;
+    }
     quint64 receivedTotal = 0;
     quint64 received;
     char data[BUFFER_SIZE];
