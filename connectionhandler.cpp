@@ -368,12 +368,12 @@ bool ConnectionHandler::downloadFile(QSslSocket *socket, QString pathName, FileD
     QFile file(pathName);
     QFileInfo info(file);
     if(!QDir().mkpath(info.path())){
-        qDebug() << "[ClientFileHandler::downloadFile] Error creating directory. Connection closed.";
+        qDebug() << "[ConnectionHandler::downloadFile] Error creating directory. Connection closed.";
         socket->close();
         return false;
     }
     if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate)){
-        qDebug() << "[ClientFileHandler::downloadFile] Error opening file. Connection closed.";
+        qDebug() << "[ConnectionHandler::downloadFile] Error opening file. Connection closed.";
         socket->close();
         return false;
     }
@@ -381,13 +381,11 @@ bool ConnectionHandler::downloadFile(QSslSocket *socket, QString pathName, FileD
     quint64 received;
     char data[BUFFER_SIZE];
     while(receivedTotal < response->filesize){
-        if(!socket->bytesAvailable()){
-            if(!socket->waitForReadyRead(DEFAULT_TIMEOUT)){
-                qDebug() << "[ClientFileHandler::downloadFile] Error while waitForReadyRead. Connection closed.";
-                socket->close();
-                file.close();
-                return false;
-            }
+        if(!socket->bytesAvailable() && !socket->waitForReadyRead(DEFAULT_TIMEOUT)){
+            qDebug() << "[ConnectionHandler::downloadFile] Error while waitForReadyRead. Connection closed.";
+            socket->close();
+            file.close();
+            return false;
         }
         received = socket->read(data, BUFFER_SIZE);
         receivedTotal += received;
