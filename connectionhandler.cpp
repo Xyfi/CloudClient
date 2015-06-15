@@ -268,7 +268,7 @@ bool ConnectionHandler::sendUploadRequest(QSslSocket *socket, QString pathName){
     QFile fileRelative(filePathRelative);
     QFileInfo infoRelative(fileRelative);
 
-    qDebug() << "Converted file:" << infoRelative.path() << infoRelative.fileName();
+    qDebug() << "[sendUploadRequest] Converted file:" << infoRelative.path() << infoRelative.fileName();
 
     socket->write(ClientRequestBuilder::buildFileUploadRequest(file.size(), infoRelative.path(), infoRelative.fileName()));
 
@@ -340,7 +340,7 @@ bool ConnectionHandler::sendDownloadRequest(QSslSocket *socket, QString pathName
     QFile fileRelative(filePathRelative);
     QFileInfo infoRelative(fileRelative);
 
-    qDebug() << "Converted file:" << infoRelative.path() << infoRelative.fileName();
+    qDebug() << "[sendDownloadRequest] Converted file:" << infoRelative.path() << infoRelative.fileName();
 
     socket->write(ClientRequestBuilder::buildFileDownloadRequest(infoRelative.path(), infoRelative.fileName()));
 
@@ -401,7 +401,7 @@ bool ConnectionHandler::sendDeletionRequest(QSslSocket *socket, QString pathName
     QFile fileRelative(filePathRelative);
     QFileInfo infoRelative(fileRelative);
 
-    qDebug() << "Converted file:" << infoRelative.path() << infoRelative.fileName();
+    qDebug() << "[sendDeletionRequest] Converted file:" << infoRelative.path() << infoRelative.fileName();
 
     socket->write(ClientRequestBuilder::buildFileDeletionRequest(infoRelative.path(), infoRelative.fileName()));
 
