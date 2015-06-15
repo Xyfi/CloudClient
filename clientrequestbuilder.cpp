@@ -10,13 +10,14 @@ ClientRequestBuilder::~ClientRequestBuilder()
 
 }
 
-QByteArray ClientRequestBuilder::buildAuthenticationRequest(QString username, QString password, int machineId){
+QByteArray ClientRequestBuilder::buildAuthenticationRequest(QString username, QString password, int machineId, bool authOnly){
     QByteArray response;
     QDataStream in(&response, QIODevice::WriteOnly);
     in << (quint8)REQID_AUTHENTICATION;
     in << username;
     in << password;
     in << machineId;
+    in << authOnly;
     return response;
 }
 

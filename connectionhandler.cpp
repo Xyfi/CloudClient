@@ -41,7 +41,7 @@ bool ConnectionHandler::sendFile(QString pathName)
         delete socket;
         return false;
     }
-    if(!authenticate(socket)){
+    if(!authenticate(socket, false)){
         delete socket;
         return false;
     }
@@ -74,7 +74,7 @@ bool ConnectionHandler::retrieveFile(QString pathName){
         delete socket;
         return false;
     }
-    if(!authenticate(socket)){
+    if(!authenticate(socket, false)){
         delete socket;
         return false;
     }
@@ -107,7 +107,7 @@ bool ConnectionHandler::removeFile(QString pathName){
         delete socket;
         return false;
     }
-    if(!authenticate(socket)){
+    if(!authenticate(socket, false)){
         delete socket;
         return false;
     }
@@ -135,7 +135,7 @@ bool ConnectionHandler::retrieveRemoteFileChanges(int localRevisionNumber, Messa
         delete socket;
         return false;
     }
-    if(!authenticate(socket)){
+    if(!authenticate(socket, false)){
         delete socket;
         return false;
     }
@@ -168,10 +168,11 @@ bool ConnectionHandler::authenticateOnly(){
         delete socket;
         return false;
     }
-    if(!authenticate(socket)){
+    if(!authenticate(socket, true)){
         delete socket;
         return false;
     }
+    qDebug() << "Authentication success";
     delete socket;
     return true;
 }
@@ -226,8 +227,8 @@ bool ConnectionHandler::connectToHost(QSslSocket* socket){
     return socket->waitForEncrypted(DEFAULT_TIMEOUT);
 }
 
-bool ConnectionHandler::authenticate(QSslSocket *socket){
-    socket->write(ClientRequestBuilder::buildAuthenticationRequest(username,password,machineId));
+bool ConnectionHandler::authenticate(QSslSocket *socket, bool authOnly){
+    socket->write(ClientRequestBuilder::buildAuthenticationRequest(username,password,machineId,authOnly));
     if(!socket->waitForBytesWritten(DEFAULT_TIMEOUT)){
         qDebug() << "[Authentication] Timeout while waiting for bytes to be written to socket. Connection closed.";
         socket->close();
@@ -248,16 +249,28 @@ bool ConnectionHandler::authenticate(QSslSocket *socket){
 }
 
 bool ConnectionHandler::sendUploadRequest(QSslSocket *socket, QString pathName){
-
     QFile file(pathName);
     QFileInfo info(file);
+
     if(!file.exists()){
         qDebug() << "[sendUploadRequest] Non-existent file. Connection closed." << pathName;
         socket->close();
         return false;
     }
 
-    socket->write(ClientRequestBuilder::buildFileUploadRequest(file.size(), info.path(), info.fileName()));
+    QString syncFolder;
+    if(!Settings::getSetting(Settings::SET_SYNC_FOLDER, &syncFolder)){
+        qDebug() << "[sendUploadRequest] Failed to retrieve sync-folder from settings.";
+        return false;
+    }
+
+    QString filePathRelative = Utils::convertAbsolutePathToRelativePath(syncFolder, info.filePath());
+    QFile fileRelative(filePathRelative);
+    QFileInfo infoRelative(fileRelative);
+
+    qDebug() << "Converted file:" << infoRelative.path() << infoRelative.fileName();
+
+    socket->write(ClientRequestBuilder::buildFileUploadRequest(file.size(), infoRelative.path(), infoRelative.fileName()));
 
     if(!socket->waitForBytesWritten(DEFAULT_TIMEOUT)){
         qDebug() << "[sendUploadRequest] Timeout while waiting for bytes to be written to socket. Connection closed.";
@@ -317,7 +330,19 @@ bool ConnectionHandler::sendDownloadRequest(QSslSocket *socket, QString pathName
     QFile file(pathName);
     QFileInfo info(file);
 
-    socket->write(ClientRequestBuilder::buildFileDownloadRequest(info.path(), info.fileName()));
+    QString syncFolder;
+    if(!Settings::getSetting(Settings::SET_SYNC_FOLDER, &syncFolder)){
+        qDebug() << "[sendUploadRequest] Failed to retrieve sync-folder from settings.";
+        return false;
+    }
+
+    QString filePathRelative = Utils::convertAbsolutePathToRelativePath(syncFolder, info.filePath());
+    QFile fileRelative(filePathRelative);
+    QFileInfo infoRelative(fileRelative);
+
+    qDebug() << "Converted file:" << infoRelative.path() << infoRelative.fileName();
+
+    socket->write(ClientRequestBuilder::buildFileDownloadRequest(infoRelative.path(), infoRelative.fileName()));
 
     if(!socket->waitForBytesWritten(DEFAULT_TIMEOUT)){
         qDebug() << "[sendDownloadRequest] Timeout while waiting for bytes to be written to socket. Connection closed.";
@@ -366,7 +391,19 @@ bool ConnectionHandler::sendDeletionRequest(QSslSocket *socket, QString pathName
     QFile file(pathName);
     QFileInfo info(file);
 
-    socket->write(ClientRequestBuilder::buildFileDeletionRequest(info.path(), info.fileName()));
+    QString syncFolder;
+    if(!Settings::getSetting(Settings::SET_SYNC_FOLDER, &syncFolder)){
+        qDebug() << "[sendUploadRequest] Failed to retrieve sync-folder from settings.";
+        return false;
+    }
+
+    QString filePathRelative = Utils::convertAbsolutePathToRelativePath(syncFolder, info.filePath());
+    QFile fileRelative(filePathRelative);
+    QFileInfo infoRelative(fileRelative);
+
+    qDebug() << "Converted file:" << infoRelative.path() << infoRelative.fileName();
+
+    socket->write(ClientRequestBuilder::buildFileDeletionRequest(infoRelative.path(), infoRelative.fileName()));
 
     if(!socket->waitForBytesWritten(DEFAULT_TIMEOUT)){
         qDebug() << "[sendDeletionRequest] Timeout while waiting for bytes to be written to socket. Connection closed.";
@@ -389,7 +426,6 @@ bool ConnectionHandler::sendDeletionRequest(QSslSocket *socket, QString pathName
 }
 
 bool ConnectionHandler::sendFileChangesRequest(QSslSocket *socket, int revisionNumber, ChangedFilesResponse* response){
-
     socket->write(ClientRequestBuilder::buildFileChangesRequest(revisionNumber, machineId));
 
     if(!socket->waitForBytesWritten(DEFAULT_TIMEOUT)){
@@ -419,12 +455,20 @@ bool ConnectionHandler::readFileChanges(QSslSocket *socket, ChangedFilesResponse
     bool deleted;
     for(int i = 0 ; i < response->nChanges ; i++ ){
         out >> dir >> name >> deleted;
+        QString syncFolder;
+        if(!Settings::getSetting(Settings::SET_SYNC_FOLDER, &syncFolder)){
+            return false;
+        }
+        QString absPath = Utils::convertRelativePathToAbsolutePath(syncFolder, dir + "/" + name);
+        qDebug() << absPath;
+        QFile file(absPath);
+        QFileInfo info(file);
         if(deleted){
-            if(!queue->addMessage({MESSAGE_TYPE_DELETE_LOCALLY, dir, name})){
+            if(!queue->addMessage({MESSAGE_TYPE_DELETE_LOCALLY, info.path(), info.fileName()})){
                 qDebug() << "[Adding]ConnectionHandler::readFileChanges] Adding delete message failed.";
             }
         } else {
-            if(!queue->addMessage({MESSAGE_TYPE_DOWNLOAD, dir, name})){
+            if(!queue->addMessage({MESSAGE_TYPE_DOWNLOAD, info.path(), info.fileName()})){
                 qDebug() << "[Adding]ConnectionHandler::readFileChanges] Adding upload message failed.";
             }
         }

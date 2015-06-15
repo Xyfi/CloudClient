@@ -18,7 +18,7 @@ public:
     ClientRequestBuilder();
     ~ClientRequestBuilder();
 
-    static QByteArray buildAuthenticationRequest(QString username, QString password, int machineId);
+    static QByteArray buildAuthenticationRequest(QString username, QString password, int machineId, bool authOnly);
     static QByteArray buildFileUploadRequest(quint64 filesize, QString directory, QString filename);
     static QByteArray buildFileDownloadRequest(QString directory, QString filename);
     static QByteArray buildFileDeletionRequest(QString directory, QString filename);

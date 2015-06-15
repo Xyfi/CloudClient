@@ -11,14 +11,6 @@ Cloud9::Cloud9(QObject *parent) : QObject(parent)
     connect(&configurationWindow, SIGNAL(startSync()), &synchronizer, SLOT(startSync()));
     mainWindow.show();
 
-    if(!QDir("watched").exists()){
-        QDir().mkdir("watched");
-    }
-
-    Settings::setSetting("TestSetting", "TRUE");
-    QString testSetting;
-    Settings::getSetting("TestSetting", &testSetting);
-    qDebug() << testSetting;
 
     synchronizer.moveToThread(&synchronizerThread);
     synchronizerThread.start();
@@ -49,7 +41,7 @@ void Cloud9::setAuthenticationDetails(QString email, QString password){
 
 void Cloud9::authenticationSuccess(bool status) {
     if(status) {
-        mainWindow.close();
+        //mainWindow.close();
 
         QString sFirstRun;
         Settings::getSetting(Settings::SET_FIRST_RUN, &sFirstRun);

@@ -18,13 +18,15 @@ LocalFileWatcher::~LocalFileWatcher()
 }
 
 bool LocalFileWatcher::checkForChanges(){
-    QDirIterator existingFolderIterator(sync_folder.dirName(),
+    QDirIterator existingFolderIterator(sync_folder.path(),
                                         QDir::AllDirs | QDir::NoDotAndDotDot,
                                         QDirIterator::Subdirectories);
     QStringList storedirectoryList = database->getAllDirectories();
-    checkDirectoryForChangedFiles(sync_folder.dirName());
+    checkDirectoryForChangedFiles(sync_folder.path());
+    qDebug() << "Checking for changes in" << sync_folder.path();
     while ( existingFolderIterator.hasNext() ) {
         QString dir = existingFolderIterator.next();
+        qDebug() << "Checking for changes in" << dir;
         if(storedirectoryList.contains(dir)){
             storedirectoryList.removeOne(dir);
         } else {
@@ -70,6 +72,6 @@ void LocalFileWatcher::checkDirectoryForChangedFiles(QString dir){
 
 bool LocalFileWatcher::refreshDatabase(){
     database->deleteAllFilesAndDirectories();
-    database->addAllFilesAndDirectories(sync_folder.dirName());
+    database->addAllFilesAndDirectories(sync_folder.path());
     return true;
 }

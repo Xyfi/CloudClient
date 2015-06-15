@@ -21,6 +21,7 @@ void Synchronizer::run(){
     remoteWatcher.checkForChanges(0);
     // TODO Handle merge conflicts
     queueHandler.start();
+    qDebug() << "Start refresh";
     localWatcher->refreshDatabase();
 }
 
