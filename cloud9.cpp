@@ -9,12 +9,14 @@ Cloud9::Cloud9(QObject *parent) : QObject(parent) {
     connect(this, SIGNAL(startAuthentication(QString, QString, bool)), &synchronizer, SLOT(authenticate(QString, QString, bool)));
     connect(&synchronizer, SIGNAL(authenticationSuccess(bool, QString, QString, bool)), this, SLOT(authenticationSuccess(bool, QString, QString, bool)));
     connect(this, SIGNAL(startSync()), &synchronizer, SLOT(startSync()));
+    connect(&configurationWindow, SIGNAL(startSync()), &synchronizer, SLOT(startSync()));
 
     //Check remember login
     QString username, password;
     if(Settings::getSetting(Settings::SET_USERNAME, &username) && Settings::getSetting(Settings::SET_PASSWORD, &password)) {
-        mainWindow.close();
-        emit startSync();
+//        mainWindow.close();
+//        emit startSync();
+        mainWindow.show();
         qDebug() << "remembered";
     } else {
         mainWindow.show();
@@ -58,8 +60,15 @@ void Cloud9::authenticationSuccess(bool status, QString email, QString password,
             Settings::setSetting(Settings::SET_USERNAME, "");
             Settings::setSetting(Settings::SET_PASSWORD, "");
         }
-        mainWindow.close();
-        emit startSync();
+//        mainWindow.close();
+
+        QString sFirstRun;
+        Settings::getSetting(Settings::SET_FIRST_RUN, &sFirstRun);
+        if (sFirstRun.toInt() == 1) {
+            configurationWindow.show();
+        } else {
+            emit startSync();
+        }
     } else {
         //show feedback login failed
     }

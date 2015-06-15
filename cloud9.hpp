@@ -23,8 +23,8 @@ private:
     MainWindow mainWindow;
     Configuration configurationWindow;
     About aboutWindow;
-    Synchronizer synchronizer;
     QThread synchronizerThread;
+    Synchronizer synchronizer;
 signals:
     void startSync();
     void startAuthentication(QString email, QString password, bool rememberMe);

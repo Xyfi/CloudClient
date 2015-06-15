@@ -12,6 +12,7 @@
 #include "serverresponseparser.hpp"
 #include "filewatcherdatabase.hpp"
 #include "messagequeue.hpp"
+#include "settings.hpp"
 
 #define DEFAULT_TIMEOUT 10000 // 10 Seconds
 #define BUFFER_SIZE 1024 * 64
@@ -49,7 +50,7 @@ private:
     QSslSocket* createSocket();
 
     bool connectToHost(QSslSocket* socket);
-    bool authenticate(QSslSocket* socket);
+    bool authenticate(QSslSocket* socket, bool authOnly);
 
     bool sendUploadRequest(QSslSocket* socket, QString pathName);
     bool uploadFile(QSslSocket* socket, QString pathName);

@@ -8,12 +8,15 @@
 #include "connectionhandler.hpp"
 #include "messagequeue.hpp"
 #include "remotefilewatcher.hpp"
+#include "settings.hpp"
 
 class Synchronizer : public QObject
 {
     Q_OBJECT
 public:
     Synchronizer(QObject* parent = 0);
+    ~Synchronizer();
+    void setSyncFolder(QString sSyncFolderPath);
     void setAuthenticationDetails(QString email, QString password, int machineId);
 
 protected:
@@ -21,7 +24,7 @@ protected:
 private:
     MessageQueue queue;
     ConnectionHandler connection;
-    LocalFileWatcher localWatcher;
+    LocalFileWatcher *localWatcher;
     RemoteFileWatcher remoteWatcher;
     MessageQueueHandler queueHandler;
     void run();

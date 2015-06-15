@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QByteArray>
 #include <QDataStream>
+#include <QDir>
 
 class Utils : public QObject
 {
@@ -35,6 +36,22 @@ public:
      * @return
      */
     static quint32 qByteArrayToInt(QByteArray byteArray);
+
+    /**
+     * @brief convertRelativePathToAbsolutePath
+     * @param syncFolderPath
+     * @param relativePath
+     * @return
+     */
+    static QString convertRelativePathToAbsolutePath(QString syncFolderPath, QString relativePath);
+
+    /**
+     * @brief convertAbsolutePathToRelativePath
+     * @param syncFolderPath
+     * @param absolutePath
+     * @return
+     */
+    static QString convertAbsolutePathToRelativePath(QString syncFolderPath, QString absolutePath);
 signals:
 
 public slots:
