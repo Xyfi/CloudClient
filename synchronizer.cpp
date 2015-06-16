@@ -6,6 +6,7 @@ Synchronizer::Synchronizer(QObject* parent) : QObject(parent),
     queueHandler(&queue, &connection)
 {
     connection.setServerAddress("192.168.1.50", 1337);
+    syncFolderSet = false;
 }
 
 Synchronizer::~Synchronizer() {
@@ -13,7 +14,10 @@ Synchronizer::~Synchronizer() {
 }
 
 void Synchronizer::setSyncFolder(QString sSyncFolderPath) {
-    localWatcher = new LocalFileWatcher(sSyncFolderPath, &queue);
+    if (!syncFolderSet) {
+        localWatcher = new LocalFileWatcher(sSyncFolderPath, &queue);
+        syncFolderSet = true;
+    }
 }
 
 void Synchronizer::run() {

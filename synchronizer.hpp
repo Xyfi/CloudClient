@@ -27,6 +27,7 @@ private:
     LocalFileWatcher *localWatcher;
     RemoteFileWatcher remoteWatcher;
     MessageQueueHandler queueHandler;
+    bool syncFolderSet;
     void run();
 
 public slots:
