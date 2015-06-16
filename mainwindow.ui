@@ -95,6 +95,9 @@
     </layout>
    </widget>
    <widget class="QCheckBox" name="rememberCheckBox">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -107,7 +110,7 @@
      <string>Remember me</string>
     </property>
     <property name="checked">
-     <bool>true</bool>
+     <bool>false</bool>
     </property>
    </widget>
   </widget>

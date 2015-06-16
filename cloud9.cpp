@@ -4,7 +4,6 @@
 
 Cloud9::Cloud9(QObject *parent) : QObject(parent) {
     //Init settings
-    static Settings settings;
     connect(&mainWindow, SIGNAL(loginRequest(QString,QString, bool)), this, SLOT(setAuthenticationDetails(QString, QString, bool)));
     connect(this, SIGNAL(startAuthentication(QString, QString, bool)), &synchronizer, SLOT(authenticate(QString, QString, bool)));
     connect(&synchronizer, SIGNAL(authenticationSuccess(bool, QString, QString, bool)), this, SLOT(authenticationSuccess(bool, QString, QString, bool)));

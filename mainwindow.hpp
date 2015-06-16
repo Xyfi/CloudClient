@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include "about.hpp"
+#include "settings.hpp"
 
 namespace Ui {
 class MainWindow;
