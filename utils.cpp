@@ -34,8 +34,6 @@ quint32 Utils::qByteArrayToInt(QByteArray byteArray) {
     return temp;
 }
 
-// BUG: Relative path should not include
-//      the sync folder root foldername.
 QString Utils::convertRelativePathToAbsolutePath(QString absSyncFolderPath, QString relativePath){
     return absSyncFolderPath + "/" + relativePath;
 }
